@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: gold
+provisioner: netapp.io/trident
+parameters:
+  media: "hybrid"
+  provisioningType: "thin"
+  snapshots: "true"
+  requiredStorage: "solidfire_192.168.0.100:Gold"
+
