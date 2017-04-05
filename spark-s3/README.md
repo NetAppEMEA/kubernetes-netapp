@@ -16,7 +16,7 @@ $ USER_NAME=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'"${CURRE
 $ CLUSTER_NAME=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'"${CURRENT_CONTEXT}"'")].context.cluster}')
 $ kubectl config set-context spark --namespace=spark-cluster --cluster=${CLUSTER_NAME} --user=${USER_NAME}
 $ kubectl config use-context spark
-```
+```spark-s3/namespace-spark-cluster.yaml
 
 Deploy the Spark master Replication Controller and Service:
 ```
@@ -90,10 +90,11 @@ scala> val movies = sc.textFile("s3a://spark/movies.txt")
 movies: org.apache.spark.rdd.RDD[String] = s3a://spark/movies.txt MapPartitionsRDD[1] at textFile at <console>:24
 
 scala> movies.count()
+res6: Long = 4245028
 ```
 
 Let's do some filtering and then write it back:
 ```
 scala> val godfather_movies = movies.filter(line => line.contains("Godfather"))
-scala> odfather_movies.saveAsTextFile("s3a://spark/godfather.txt")
+scala> godfather_movies.saveAsTextFile("s3a://spark/godfather.txt")
 ```
