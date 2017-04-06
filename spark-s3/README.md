@@ -1,35 +1,40 @@
 # Apache Spark with S3 Support
 
-This example shows how to deploy a stateless Apache Spark cluster with S3 support on Kubernetes. For more details, have a look at the [kubernetes/spark](https://github.com/kubernetes/kubernetes/tree/master/examples/spark) example.
+This example shows how to deploy a stateless Apache Spark cluster with S3 support on Kubernetes. This is based on the "official" [kubernetes/spark](https://github.com/kubernetes/kubernetes/tree/master/examples/spark) example, which also contains a few more details on the deployment steps.
 
 ## Deploying Spark on Kubernetes
 
 Create a new namespace:
+
 ```
 $ kubectl create -f namespace-spark-cluster.yaml
 ```
 
 Configure `kubectl` to work with the new namespace:
+
 ```
 $ CURRENT_CONTEXT=$(kubectl config view -o jsonpath='{.current-context}')
 $ USER_NAME=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'"${CURRENT_CONTEXT}"'")].context.user}')
 $ CLUSTER_NAME=$(kubectl config view -o jsonpath='{.contexts[?(@.name == "'"${CURRENT_CONTEXT}"'")].context.cluster}')
 $ kubectl config set-context spark --namespace=spark-cluster --cluster=${CLUSTER_NAME} --user=${USER_NAME}
 $ kubectl config use-context spark
-```spark-s3/namespace-spark-cluster.yaml
+```
 
 Deploy the Spark master Replication Controller and Service:
+
 ```
 $ kubectl create -f spark-master-controller.yaml
 $ kubectl create -f spark-master-service.yaml
 ```
 
 Next, start your Spark workers:
+
 ```
 $ kubectl create -f spark-worker-controller.yaml
 ```
 
-Let's wait until everything is up and running
+Let's wait until everything is up and running:
+
 ```
 $ kubectl get all
 NAME                               READY     STATUS    RESTARTS   AGE
@@ -48,6 +53,7 @@ svc/spark-master   10.108.94.160   <none>        7077/TCP,8080/TCP   9m
 ## Running queries against S3
 
 Now, let's fire up a Spark shell and try out some commands:
+
 ```
 $ kubectl exec spark-master-controller-5rgz2 -it spark-shell
 Setting default log level to "WARN".
@@ -70,6 +76,7 @@ scala>
 ```
 
 Excellent, now let's tell our Spark cluster the details of our S3 target:
+
 ```
 scala> sc.hadoopConfiguration.set("fs.s3a.endpoint", "s3.company.com:8082")
 scala> sc.hadoopConfiguration.set("fs.s3a.access.key", "94IMPM0VXXXXXXXX")
@@ -78,12 +85,13 @@ scala> sc.hadoopConfiguration.set("fs.s3a.fast.upload", "true")
 ```
 
 If you are using a self-signed certifcate (and you haven't put it in the JVM truststore), you can disable SSL certificate verification via:
+
 ```
 scala> System.setProperty("com.amazonaws.sdk.disableCertChecking", "1")
 ```
-However, don't do this in production!
 
-Now, let's load some data that is sitting in S3:
+However, don't do this in production! Now, let's load some data that is sitting in S3:
+
 ```
 scala> val movies = sc.textFile("s3a://spark/movies.txt")
 movies: org.apache.spark.rdd.RDD[String] = s3a://spark/movies.txt MapPartitionsRDD[1] at textFile at <console>:24
@@ -91,13 +99,16 @@ movies: org.apache.spark.rdd.RDD[String] = s3a://spark/movies.txt MapPartitionsR
 scala> movies.count()
 res6: Long = 4245028
 ```
+
 Looks like it is working, let's do some filtering and then write the results back to S3:
+
 ```
 scala> val godfather_movies = movies.filter(line => line.contains("Godfather"))
 scala> godfather_movies.saveAsTextFile("s3a://spark/godfather.txt")
 ```
 
 Now, let's see what Spark wrote to our S3 bucket:
+
 ```
 $ sgws s3 ls s3://spark/godfather.txt/ --profile spark
 2017-04-05 17:46:34          0 _SUCCESS
