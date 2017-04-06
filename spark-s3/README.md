@@ -75,7 +75,7 @@ Type :help for more information.
 scala>
 ```
 
-Excellent, now let's tell our Spark cluster the details of our S3 target:
+Excellent, now let's tell our Spark cluster the details of our S3 target, this will use https by default:
 
 ```
 scala> sc.hadoopConfiguration.set("fs.s3a.endpoint", "s3.company.com:8082")
@@ -90,7 +90,8 @@ If you are using a self-signed certifcate (and you haven't put it in the JVM tru
 scala> System.setProperty("com.amazonaws.sdk.disableCertChecking", "1")
 ```
 
-However, don't do this in production! Now, let's load some data that is sitting in S3:
+However, please don't do this in production.
+Now, let's load some data that is sitting in S3:
 
 ```
 scala> val movies = sc.textFile("s3a://spark/movies.txt")
@@ -107,7 +108,7 @@ scala> val godfather_movies = movies.filter(line => line.contains("Godfather"))
 scala> godfather_movies.saveAsTextFile("s3a://spark/godfather.txt")
 ```
 
-Now, let's see what Spark wrote to our S3 bucket:
+Let's see what Spark wrote to our S3 bucket:
 
 ```
 $ sgws s3 ls s3://spark/godfather.txt/ --profile spark
@@ -120,8 +121,8 @@ $ sgws s3 ls s3://spark/godfather.txt/ --profile spark
 2017-04-05 17:46:33       3565 part-00005
 ```
 
-As you can see, Spark didn't write a single object, but rather chunked it over multiple objects. While this might not be desirable with a small dataset, it makes sense for large datasets, as the overall throughput for writing should improve, as all workers can write in parallel to S3. Concating all objects would yield the complete dataset as a textfile.
+As you can see, Spark didn't write a single object, but rather chunked it over multiple objects. While this might not be desirable with a small dataset, it makes sense for larger ones. This is because the overall throughput for writing to S3 improves as all workers can write in parallel. Concating all objects would yield the complete dataset as a single textfile.
 
 ## Further notes
 
-This setup is a just an inital introduction on getting S3 working with Apache Spark on Kubernetes. Getting insights out of your data is the next step, but also optimizing performance is an important topic. For example, using Spark's `parallelize` call to parallelize object reads, can yield massive performance improvements over using a simple `sc.textFiles(s3a://spark/*)` as used in this example.
+This setup is a just an inital introduction on getting S3 working with Apache Spark on Kubernetes. Getting insights out of your data is the next step, but also optimizing performance is an important topic. For example, using Spark's `parallelize` call to parallelize object reads can yield massive performance improvements over using a simple `sc.textFiles(s3a://spark/*)` as used in this example.
