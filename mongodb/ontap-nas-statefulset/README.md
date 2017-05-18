@@ -39,6 +39,8 @@ To deploy MongoDB with 3 replica sets using NetApp ONTAP NAS configured with NFS
 
 <code>kubectl create -f mongo-ontap-nas-statefulsets.yaml</code>
 
+*Note: If using Openshift you must give the serviceaccount additional privileges to list pods as required by the sidecar.  Giving admin access is one way to do it:* `oadm policy add-cluster-role-to-user admin system:serviceaccount:YOUR-PROJECT-NAME:default`
+
 This YAML will deploy a headless service and the MongoDb StatefulSet with  this “sidecar” container which will configure the MongoDB replica set automatically. A “sidecar” is a helper container which helps the main container do its work.
 
 Once you execute the deployment command you will see mongo pods come up 1 by 1. Finally the StatefulSet will create 3 mongo instances 1 for each replica set.
@@ -68,7 +70,7 @@ In this case, the connection string URI would be:
 
 <code>“mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/dbname_?”</code>
 
-## Scaling 
+## Scaling
 
 Here is how you can scale your cluster to 5 replica set:
 
