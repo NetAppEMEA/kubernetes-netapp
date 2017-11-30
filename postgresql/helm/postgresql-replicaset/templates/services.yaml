@@ -1,0 +1,50 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "postgresql-replicaset.fullname" . }}-master
+  labels:
+    name: {{ template "postgresql-replicaset.fullname" . }}-master
+spec:
+  ports:
+  - protocol: {{.Values.service.protocol}}
+    port: {{.Values.service.port}}
+    targetPort: {{.Values.service.targetPort}}
+    nodePort: {{.Values.service.nodePort}}
+  selector:
+    name: {{ template "postgresql-replicaset.fullname" . }}-master
+  type: {{.Values.service.type}}
+  sessionAffinity: None
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "postgresql-replicaset.fullname" . }}-replica
+  labels:
+    name: {{ template "postgresql-replicaset.fullname" . }}-replica
+spec:
+  ports:
+  - protocol: {{.Values.service.protocol}}
+    port: {{.Values.service.port}}
+    targetPort: {{.Values.service.targetPort}}
+    nodePort: {{.Values.service.nodePort}}
+  selector:
+    name: {{ template "postgresql-replicaset.fullname" . }}-replica
+  type: {{.Values.service.type}}
+  sessionAffinity: None
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "postgresql-replicaset.fullname" . }}
+  labels:
+    app: {{ template "postgresql-replicaset.name" . }}
+spec:
+  ports:
+  - port: {{.Values.service.port}}
+    name: web
+  clusterIP: None
+  selector:
+    app: {{ template "postgresql-replicaset.name" . }}
+

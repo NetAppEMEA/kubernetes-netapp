@@ -1,0 +1,59 @@
+
+replicas: 2
+databaseName: userdb
+container:
+  port: 5432
+  name:
+    default: pgset
+    primary: pgset-primary
+    replica: pgset-replica
+
+service:
+  name: pgset
+  protocol: TCP
+  port: 5432
+  targetPort: 5432
+  nodePort: 0
+  type: ClusterIP
+  master: 
+    suffix: master
+  replica:
+    suffix: replica
+
+serviceAccount:
+  create: true
+  name: pgset-sa
+  namespace: default
+
+clusterRole:
+  suffix: cr
+
+clusterRoleBinding:
+  suffix: crb
+
+credentials:
+  primary: password
+  root: password
+  user: password
+serviceType: ClusterIP
+
+image:
+  name: crunchydata/crunchy-postgres
+  tag: centos7-9.6.6-1.7.0
+  pullPolicy: IfNotPresent
+
+resources: {}
+#  requests:
+#    cpu: 100m
+#    memory: 256Mi
+#  limits:
+#    cpu: 500m
+#    memory: 512Mi
+
+persistentVolume:
+  enabled: true
+  storageClass: basic
+  accessModes: 
+    - ReadWriteOnce
+  size: 3Gi
+  annotations: {}
