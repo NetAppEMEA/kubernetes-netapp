@@ -1,8 +1,7 @@
 name: postgresql-replicaset
 home: https://github.com/NetAppEMEA
 version: 1.0
-description: NoSQL document-oriented database that stores JSON-like documents with
-  dynamic schemas, simplifying the integration of data in content-driven applications.
+description: This Sample helm chart deploys Crunchy data postgresql StatefulSet
 icon: https://www.postgresql.org/media/img/about/press/elephant.png
 sources:
 - https://github.com/NetAppEMEA/kubernetes-netapp/postgres

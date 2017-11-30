@@ -35,7 +35,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         env:
         - name: PG_MASTER_USER
-          value: master
+          value: "{{.Values.masterUser}}"
         - name: PGHOST
           value: "/tmp"
         - name: PG_MODE
@@ -45,15 +45,24 @@ spec:
         - name: PG_MASTER_PORT
           value: "{{.Values.container.port}}"
         - name: PG_MASTER_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "postgresql-replicaset.fullname" . }}
+              key: masterPassword
         - name: PG_USER
-          value: testuser
+          value: "{{.Values.user}}"
         - name: PG_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "postgresql-replicaset.fullname" . }}
+              key: password
         - name: PG_DATABASE
           value: "{{.Values.databaseName}}"
         - name: PG_ROOT_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "postgresql-replicaset.fullname" . }}
+              key: rootPassword
         volumeMounts:
         - name: pgdata
           mountPath: "/pgdata"

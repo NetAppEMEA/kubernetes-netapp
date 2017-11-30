@@ -17,11 +17,11 @@ serviceAccount:
   namespace: default
 
 
-credentials:
-  primary: password
-  root: password
-  user: password
-serviceType: ClusterIP
+user: testuser
+password: password
+masterUser: master
+masterPassword: password
+rootpassword: password
 
 image:
   name: crunchydata/crunchy-postgres
