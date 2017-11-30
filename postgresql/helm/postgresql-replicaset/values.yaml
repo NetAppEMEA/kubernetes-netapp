@@ -3,33 +3,19 @@ replicas: 2
 databaseName: userdb
 container:
   port: 5432
-  name:
-    default: pgset
-    primary: pgset-primary
-    replica: pgset-replica
 
 service:
-  name: pgset
   protocol: TCP
   port: 5432
   targetPort: 5432
   nodePort: 0
   type: ClusterIP
-  master: 
-    suffix: master
-  replica:
-    suffix: replica
 
 serviceAccount:
   create: true
   name: pgset-sa
   namespace: default
 
-clusterRole:
-  suffix: cr
-
-clusterRoleBinding:
-  suffix: crb
 
 credentials:
   primary: password
