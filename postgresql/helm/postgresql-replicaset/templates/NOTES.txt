@@ -1,0 +1,12 @@
+PostgreSQL can be accessed via port {{.Values.service.port}} on the following DNS name from within your cluster:
+{{ template "postgresql-replicaset.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+To get your user password run:
+
+kubectl get secret --namespace {{ .Release.Namespace }} {{ template "postgresql-replicaset.fullname" . }} -o jsonpath="{.data.password}" | base64 --decode; echo
+
+To connect to your database run the following command:
+
+kubectl run {{ template "postgresql-replicaset.fullname" . }}-client --rm --tty -i --image postgres \
+--command -- psql -U {{ default "postgres" .Values.user }} \
+-h {{ template "postgresql-replicaset.fullname" . }} {{ default "postgres" .Values.databaseName }}

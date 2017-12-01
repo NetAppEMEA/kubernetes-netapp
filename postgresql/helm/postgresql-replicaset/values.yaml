@@ -16,12 +16,13 @@ serviceAccount:
   name: pgset-sa
   namespace: default
 
-
+#Credentials for your DB
+#Passwords will be randomly generated if not provided
 user: testuser
-password: password
+#password: password
 masterUser: master
-masterPassword: password
-rootpassword: password
+#masterPassword: password
+#rootpassword: password
 
 image:
   name: crunchydata/crunchy-postgres
