@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
   labels:
@@ -10,6 +10,10 @@ metadata:
 spec:
   serviceName: {{ template "postgresql-replicaset.fullname" . }}
   replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "postgresql-replicaset.name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
