@@ -1,12 +1,18 @@
 ## number of postgres replicas including the master 
+##
 replicas: 2
+
 ## name of your initial database
+##
 databaseName: userdb
+
 ## port number for the postgres container
+##
 container:
   port: 5432
 
 ## postgres services details
+##
 service:
   protocol: TCP
   port: 5432
@@ -16,6 +22,7 @@ service:
 
 ## service account to be used for the cluster role that we create to update labels on master node
 ## by default a new account is created
+##
 serviceAccount:
   create: true
   name: pgset-sa
@@ -23,6 +30,7 @@ serviceAccount:
 
 ## Credentials for your DB
 ## Passwords will be randomly generated if not provided
+##
 user: testuser
 # password: password
 masterUser: master
@@ -30,12 +38,14 @@ masterUser: master
 # rootpassword: password
 
 ## Crunchy data postgres image to use with tag and image pull policy 
+##
 image:
   name: crunchydata/crunchy-postgres
   tag: centos7-9.6.6-1.7.0
   pullPolicy: IfNotPresent
 
 ## here you can set the resource limits and requests for your postgres containers
+##
 resources: {}
 #  requests:
 #    cpu: 100m
@@ -45,10 +55,11 @@ resources: {}
 #    memory: 512Mi
 
 ## Set the size for your postgres data volumes and specify a storage class
+##
 persistentVolume:
   enabled: true
-#  storageClass: gold
+  storageClass: gold
   accessModes: 
     - ReadWriteOnce
   size: 3Gi
-#  annotations: {}
+  annotations: {}
